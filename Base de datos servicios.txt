@@ -1,0 +1,65 @@
+CREATE DATABASE servicios;
+
+
+-- 0) Extensiones útiles
+CREATE EXTENSION IF NOT EXISTS pgcrypto; -- para gen_random_uuid()
+
+-- 1) Catálogo de categorías de servicio
+CREATE TABLE IF NOT EXISTS service_category (
+  slug TEXT PRIMARY KEY, -- ej: 'arquitecto', 'plomero'
+  name TEXT NOT NULL
+);
+
+INSERT INTO service_category (slug, name) VALUES
+  ('arquitecto','Arquitecto'),
+  ('plomero','Plomero'),
+  ('pintor','Pintor'),
+  ('albanil','Albañil')
+ON CONFLICT DO NOTHING;
+
+-- 2) Usuarios
+CREATE TABLE IF NOT EXISTS app_user (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  phone TEXT,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('USER','PROFESSIONAL')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 3) Perfil de profesional (1:1 con usuario cuando role = PROFESSIONAL)
+CREATE TABLE IF NOT EXISTS professional_profile (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL UNIQUE REFERENCES app_user(id) ON DELETE CASCADE,
+  cedula TEXT UNIQUE NOT NULL, -- cédula real del propietario (Ecuador)
+  main_category TEXT NOT NULL REFERENCES service_category(slug),
+  headline TEXT, -- "Electricista: Iluminación" etc.
+  about TEXT,
+  city TEXT,
+  verified BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 4) Fotos del profesional
+CREATE TABLE IF NOT EXISTS professional_photo (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  professional_id UUID NOT NULL REFERENCES professional_profile(id) ON DELETE CASCADE,
+  url TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 5) Vista simple para listar profesionales con su nombre
+CREATE OR REPLACE VIEW v_professional_card AS
+SELECT p.id as professional_id,
+       u.full_name,
+       p.main_category,
+       p.headline,
+       COALESCE((SELECT url FROM professional_photo ph WHERE ph.professional_id = p.id ORDER BY ph.created_at ASC LIMIT 1), '') AS photo_url,
+       p.city,
+       p.verified
+FROM professional_profile p
+JOIN app_user u ON u.id = p.user_id;
+4. Configuración del backend
+
+En tu archivo .env coloca:

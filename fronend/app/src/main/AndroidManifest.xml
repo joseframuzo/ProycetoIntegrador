@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.pintegrador.servicios">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:label="Servicios"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        android:usesCleartextTraffic="true">
+
+        <!-- LAUNCHER: debe ser exported=true -->
+        <activity
+            android:name=".ui.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Las demás no tienen intent-filter: pueden ir con exported="false" -->
+        <activity android:name=".ui.RegisterActivity" android:exported="false"/>
+        <activity android:name=".ui.UserHomeActivity" android:exported="false"/>
+        <activity android:name=".ui.ProfessionalsListActivity" android:exported="false"/>
+        <activity android:name=".ui.ProfessionalHomeActivity" android:exported="false"/>
+
+    </application>
+</manifest>

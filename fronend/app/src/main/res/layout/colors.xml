@@ -1,0 +1,14 @@
+<resources>
+    <!-- Degradado del header -->
+    <color name="blueStart">#0EA5FF</color>
+    <color name="blueEnd">#0161C3</color>
+
+    <!-- Botón primario -->
+    <color name="primaryBlue">#1976D2</color>
+
+    <!-- Texto sobre header -->
+    <color name="onHeader">#FFFFFFFF</color>
+
+    <!-- Borde suave de inputs -->
+    <color name="strokeLight">#33000000</color>
+</resources>
