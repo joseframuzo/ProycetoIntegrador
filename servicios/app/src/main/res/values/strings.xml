@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">servicios</string>
+
+    <string name="send">Enviar</string>
+
+
+    <string name="contactar">Contactar</string>
+    <string name="fotos">Fotos</string>
+
+
+
+    <string-array name="roles_array">
+        <item>USER</item>
+        <item>PROFESSIONAL</item>
+    </string-array>
+</resources>

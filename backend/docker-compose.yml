@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: servicios-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: servicios
+    ports:
+      - "5432:5432"                 
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d servicios"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [localnet]
+
+  api:
+    image: node:20-alpine
+    container_name: servicios-api
+    working_dir: /app
+    volumes:
+      - ./:/app                     
+      - /app/node_modules         
+    environment:                  
+      PORT: 3000
+      DB_DIALECT: postgres
+      DB_HOST: db                   
+      DB_PORT: 5432
+      DB_NAME: servicios
+      DB_USER: postgres
+      DB_PASS: 1234
+      LOG_SQL: "true"
+      NODE_ENV: development
+    command: sh -c "npm ci && npm run dev"
+    ports:
+      - "3000:3000"                 
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [localnet]
+
+volumes:
+  pgdata:
+
+networks:
+  localnet:
+    driver: bridge
